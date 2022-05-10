@@ -21,8 +21,7 @@ void StartNotepadInSession(ULONG dwSessionId)
 			{
 				PROCESS_INFORMATION pi;
 				STARTUPINFOW si = { sizeof(si) };
-				WCHAR cmd[] = L"notepad.exe";
-				if (CreateProcessAsUserW(hToken, 0, cmd, 0, 0, 0, 
+				if (CreateProcessAsUserW(hToken, sz, 0, 0, 0, 0, 
 					CREATE_UNICODE_ENVIRONMENT, lpEnvironment, 0, &si, &pi))
 				{
 					DbgPrint("started !\r\n");
@@ -34,6 +33,10 @@ void StartNotepadInSession(ULONG dwSessionId)
 					LOG(LogError("CreateProcessAsUserW"));
 				}
 				DestroyEnvironmentBlock(lpEnvironment);
+			}
+			else
+			{
+				LOG(LogError("CreateEnvironmentBlock"));
 			}
 			NtClose(hToken);
 		}
@@ -104,7 +107,6 @@ class CSvc : public CSvcBase
 		switch (dwEventType)
 		{
 		case WTS_SESSION_LOGON:
-		//case WTS_CONSOLE_CONNECT:
 			StartNotepadInSession(dwSessionId);
 			break;
 		}
